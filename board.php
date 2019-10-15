@@ -6,6 +6,7 @@ error_reporting(E_ALL); //すべてのエラーを出力する
 require_once('functions.php');
 require_once('db.php');
 require_once('dao/product_comment.php');
+require_once('ImageUploader.php');
 ?>
 
 <!doctype html>
@@ -30,8 +31,9 @@ $product_comment_image = '';
 //エラーメッセージの初期化
 $errors = array();
 
-if(!empty($_POST)){
-
+//if(!empty($_POST)){ //どちらが正しい？
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  
   //コメントのみの投稿可
   //画像のみの投稿可
   //どちらもない場合はエラー
@@ -44,94 +46,49 @@ if(!empty($_POST)){
 
     //入力判定
     if (empty($product_comment)) {
-      //画像アップロードされていなかった場合
+      //コメントなし・画像アップロードなしの場合
       if(empty($_FILES['image_file']['name'])){
         $errors['product_comment_none'] = "コメントが入力されていません。";
       }
     }elseif(mb_strlen($product_comment) > 1000){
       $errors['product_comment_length'] = "コメントは1000文字以内で入力して下さい。";
     }
-  
-  //アップロードファイルの判定
+
+  //アップロード画像ファイルの有無判定
   if(!empty($_FILES['image_file']['name'])){
-    try {
-      if (is_uploaded_file ( $_FILES ['image_file'] ['tmp_name'] )) {
-        //ファイルのMIMEタイプをチェック
-        if (!isset($_FILES['image_file']['error']) || !is_int($_FILES['image_file']['error'])) {
-            exit("パラメータが不正です");
-        }
-        // $_FILES['image_file']['error'] の値を確認
-        switch ($_FILES['image_file']['error']) {
-          case UPLOAD_ERR_OK: // OK
-              break;
-          case UPLOAD_ERR_NO_FILE:   // ファイル未選択
-              exit("ファイルが選択されていません");
-              break;
-          case UPLOAD_ERR_INI_SIZE:  // php.ini定義の最大サイズ超過
-          case UPLOAD_ERR_FORM_SIZE: // フォーム定義の最大サイズ超過 (フォームで設定した場合のみ)
-              exit("画像のファイルサイズは2MBまでです");
-              break;
-          default:
-              exit("その他のエラーが発生しました");
-              break;
-        }
-
-      //ここで定義するサイズ上限のオーバーチェック
-      if ($_FILES['image_file']['size'] > 2097152 ) {
-          exit("画像のファイルサイズは2MBまでです");
-      }
-
-      $product_comment_image = uniqid();
-      switch (exif_imagetype ( $_FILES['image_file']['tmp_name'])) {
-        case IMAGETYPE_JPEG :
-            $product_comment_image .= '.jpg';
-            break;
-        case IMAGETYPE_GIF :
-            $product_comment_image .= '.gif';
-            break;
-        case IMAGETYPE_PNG :
-            $product_comment_image .= '.png';
-            break;
-        default :
-            exit("アップロード可能なファイルは[jpeg] [png] [gif]のみです。");
-            break;
-      }
-
-      //ファイルを一時フォルダから指定したディレクトリに移動
-      if(!move_uploaded_file($_FILES['image_file']['tmp_name'], 'upload/'. $product_comment_image)){
-          exit("ファイル保存時にエラーが発生しました");
-      }
-      }
-    } catch (RuntimeException $e) {
-      exit("アップロードに失敗しました");
-  }
+    
+    $uploader = new ImageUploader();
+    // ファイルアップロード
+    $uploader->upload();
+    // ファイル名を取得
+    $product_comment_image = $uploader->getImageFileName();
   }
 
-//エラーが無ければデータベースに登録
-if(count($errors) === 0){
-  $pdo = db_connect();
-  try{ //コメントをデータベースへ登録する
-    insert_product_comment($product_comment,$product_comment_image);
-  } catch (PDOException $e) {
-    exit("登録に失敗しました");
-  }
-  //リロードによる二重サブミット防止策
-  header('Location:http://192.168.33.10/board/board.php');
-
-} elseif(count($errors) > 0){ ?>
-
-	<li class="step3 active error">
-	<p>エラー<br>下記メッセージをご確認ください。</p>
-	<p class="number"><span class="fa-stack fa-lg">
-	<i class="fa fa-circle fa-stack-2x"></i>
-	<i class="fa fa-inverse fa-stack-1x">!</i>
-	</span></p>
-	</li>
-    <?php foreach($errors as $error){ ?>
-      <div class='alert-notify-box'><p class='alert-notify-box-text'><?=he($error)?></p></div>
-    <?php
+  //エラーが無ければデータベースに登録
+  if(count($errors) === 0){ 
+    $pdo = db_connect();
+    try{ //コメント・画像をデータベースへ登録する
+      insert_product_comment($product_comment,$product_comment_image);
+    } catch (PDOException $e) {
+      exit("登録に失敗しました");
     }
-}
+    //リロードによる二重サブミット防止策
+    header('Location:http://192.168.33.10/board_class_ver/board.php');
+
+  } elseif(count($errors) > 0){ ?>
+
+    <li class="step3 active error">
+    <p>エラー<br>下記メッセージをご確認ください。</p>
+    <p class="number"><span class="fa-stack fa-lg">
+    <i class="fa fa-circle fa-stack-2x"></i>
+    <i class="fa fa-inverse fa-stack-1x">!</i>
+    </span></p>
+    </li>
+      <?php foreach($errors as $error){ ?>
+        <div class='alert-notify-box'><p class='alert-notify-box-text'><?=he($error)?></p></div>
+      <?php
+      }
+  }
 }
 ?>
 
