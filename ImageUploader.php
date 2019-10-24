@@ -1,8 +1,7 @@
 <?php
 
 class ImageUploader {
-// php自体の変数名はスネークケース クラスのメンバー変数名、メソッド名はキャメルケース 問題ない？
-//リダイレクトの位置
+
   private $imageFileName ='';
 
   public function upload() {
@@ -22,7 +21,6 @@ class ImageUploader {
       }
     } catch(Exception $e) {
       echo $e->getMessage();
-      exit;
     }
   }
 
@@ -56,11 +54,11 @@ class ImageUploader {
     $image = uniqid();
     switch (exif_imagetype ( $_FILES['image_file']['tmp_name'])) {
       case IMAGETYPE_JPEG :
-        return $image .= '.jpg';
+        return $image .'.jpg';
       case IMAGETYPE_GIF :
-        return $image .= '.gif';
+        return $image .'.gif';
       case IMAGETYPE_PNG :
-        return $image .= '.png';
+        return $image .'.png';
       default :
         throw new Exception("アップロード可能なファイルは[jpeg] [png] [gif]のみです。");
     }
