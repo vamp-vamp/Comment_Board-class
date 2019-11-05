@@ -15,11 +15,13 @@ class ImageUploader {
         $this->imageFileName = $this->validateImageType();
         //ファイルを一時フォルダから指定したディレクトリに移動
         $this->move($this->imageFileName);
+        //セッションへ受け渡し
+        $_SESSION['success'] = "アップロード完了"; 
         //redirect
       } else {
         throw new Exception("ファイルが選択されていません。");
       }
-    } catch(Exception $e) {
+    } catch (Exception $e) {
       echo $e->getMessage();
     }
   }
@@ -75,4 +77,5 @@ class ImageUploader {
   public function getImageFileName() {
       return $this->imageFileName;
   }
+
 }

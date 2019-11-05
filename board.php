@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 //エラーの設定
 ini_set("display_errors", 1); //エラーを画面に表示
 error_reporting(E_ALL); //すべてのエラーを出力する
@@ -63,26 +65,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $comment_image_dir = 'upload/';
         // 画像ファイルアップロード
         $uploader->upload($comment_image_dir);
-        // ファイル名を取得
-        $product_comment_image = $uploader->getImageFileName();
+        //セッションで渡された中身の確認
+        if (isset($_SESSION['success'])) {
+          // ファイル名を取得
+          $product_comment_image = $uploader->getImageFileName();
 
-    /*【質問】
-    上記の処理が例外をキャッチしたときには下記の処理を行わないように
-    ファイル名が発行されている場合のみの処理としていますが、
-    こんな方法で良いのでしょうか？
-    trueやfalseでなにかしら返すような方法があるのでしょうか？
-    そもそもの処理の流れが悪い？？？
-    SESSIONを使用する
-    */
-
-        if (!empty($product_comment_image)) {
+          if (!empty($product_comment_image)) {
             // 画像ファイルリサイズ
             $imageresize = new ImageResize();
             $width_max = 600; //リサイズ後の画像幅の最大値
             $imageresize->resize($comment_image_dir .$product_comment_image, $width_max);
-        } else {
-            echo "画像ファイル名を取得できませんでした。";
-            $errors['product_comment_image_upload'] = "画像ファイルをアップロードできませんでした。";
+          } else {
+              echo "画像ファイル名を取得できませんでした。";
+              $errors['product_comment_image_upload'] = "画像ファイルをアップロードできませんでした。";
+          }
         }
     }
 
