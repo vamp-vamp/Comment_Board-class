@@ -5,6 +5,7 @@ error_reporting(E_ALL); //すべてのエラーを出力する
 
 require_once('functions.php');
 require_once('db.php');
+require_once('common.php');
 require_once('dao/product_comment.php');
 require_once('ImageUploader.php');
 require_once('ImageResize.php');
