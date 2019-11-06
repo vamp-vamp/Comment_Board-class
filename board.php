@@ -38,9 +38,9 @@ $errors = array();
 
 //POSTリクエストによるページ遷移かチェック
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  //コメントのみの投稿可
-  //画像のみの投稿可
-  //どちらもない場合はエラー
+    //コメントのみの投稿可
+    //画像のみの投稿可
+    //どちらもない場合はエラー
 
     //POSTされたデータを変数に入れる
     $product_comment = isset($_POST['product_comment']) ? $_POST['product_comment'] : null;
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     //入力判定
     if (empty($product_comment)) {
-      //コメントなし・画像アップロードなしの場合
+        //コメントなし・画像アップロードなしの場合
         if (empty($_FILES['image_file']['name'])) {
             $errors['product_comment_none'] = "コメントが入力されていません。";
         }
@@ -60,29 +60,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     //アップロード画像ファイルの有無判定
     if (!empty($_FILES['image_file']['name'])) {
-        $uploader = new ImageUploader();
+        $uploader = new \App\ImageUploader();
         // 画像アップロードディレクトリ
         $comment_image_dir = 'upload/';
         // 画像ファイルアップロード
         $uploader->upload($comment_image_dir);
         //セッションで渡された中身の確認
         if (isset($_SESSION['success'])) {
-          // ファイル名を取得
-          $product_comment_image = $uploader->getImageFileName();
+            // ファイル名を取得
+            $product_comment_image = $uploader->getImageFileName();
 
-          if (!empty($product_comment_image)) {
-            // 画像ファイルリサイズ
-            $imageresize = new ImageResize();
-            $width_max = 600; //リサイズ後の画像幅の最大値
-            $imageresize->resize($comment_image_dir .$product_comment_image, $width_max);
-          } else {
-              echo "画像ファイル名を取得できませんでした。";
-              $errors['product_comment_image_upload'] = "画像ファイルをアップロードできませんでした。";
-          }
+            if (!empty($product_comment_image)) {
+                // 画像ファイルリサイズ
+                $imageresize = new \App\ImageResize();
+                $width_max = 600; //リサイズ後の画像幅の最大値
+                $imageresize->resize($comment_image_dir .$product_comment_image, $width_max);
+            } else {
+                echo "画像ファイル名を取得できませんでした。";
+                $errors['product_comment_image_upload'] = "画像ファイルをアップロードできませんでした。";
+            }
         }
     }
 
-  //エラーが無ければデータベースに登録
+    //エラーが無ければデータベースに登録
     if (count($errors) === 0) {
         $pdo = db_connect();
         try { //コメント・画像をデータベースへ登録する
