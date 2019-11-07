@@ -1,6 +1,8 @@
 <?php
 namespace App;
 
+use Exception;
+
 class ImageUploader
 {
     private $imageFileName ='';
@@ -8,7 +10,7 @@ class ImageUploader
     public function upload()
     {
         try {
-            if (is_uploaded_file($_FILES ['image_file'] ['tmp_name'])) {
+            if (!is_uploaded_file($_FILES ['image_file'] ['tmp_name'])) {
                 //エラーチェック
                 $this->validateUpload();
                 //サイズチェック
@@ -18,14 +20,11 @@ class ImageUploader
                 //ファイルを一時フォルダから指定したディレクトリに移動
                 $this->move($this->imageFileName);
                 return true;
-                //セッションへ受け渡し
-                //$_SESSION['successw'] = "アップロード完了";
-            //redirect
             } else {
                 throw new Exception("ファイルが選択されていません。");
             }
         } catch (Exception $e) {
-            echo $e->getMessage();
+            return $e->getMessage();
         }
     }
 

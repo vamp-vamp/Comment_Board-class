@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 画像ファイルアップロード
         $uploadcheck = $uploader->upload($comment_image_dir);
 
-        if ($uploadcheck) {
+        if ($uploadcheck === true) {
             // ファイル名を取得
             $product_comment_image = $uploader->getImageFileName();
 
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors['product_comment_image_filename'] = "画像ファイルをアップロードできませんでした。リサイズエラー";
             }
         } else {
-            $errors['product_comment_image_upload'] = "画像ファイルをアップロードできませんでした。";
+            $errors['product_comment_image_upload'] = $uploadcheck;
         }
     }
 
