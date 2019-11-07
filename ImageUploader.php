@@ -10,7 +10,7 @@ class ImageUploader
     public function upload()
     {
         try {
-            if (!is_uploaded_file($_FILES ['image_file'] ['tmp_name'])) {
+            if (is_uploaded_file($_FILES ['image_file'] ['tmp_name'])) {
                 //エラーチェック
                 $this->validateUpload();
                 //サイズチェック

@@ -1,6 +1,8 @@
 <?php
 namespace App;
 
+use RuntimeException;
+
 class ImageResize
 {
     //初期化
