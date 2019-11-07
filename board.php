@@ -64,21 +64,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 画像アップロードディレクトリ
         $comment_image_dir = 'upload/';
         // 画像ファイルアップロード
-        $uploader->upload($comment_image_dir);
-        //セッションで渡された中身の確認
-        if (isset($_SESSION['success'])) {
+        $uploadcheck = $uploader->upload($comment_image_dir);
+
+        if ($uploadcheck) {
             // ファイル名を取得
             $product_comment_image = $uploader->getImageFileName();
 
             if (!empty($product_comment_image)) {
                 // 画像ファイルリサイズ
                 $imageresize = new \App\ImageResize();
-                $width_max = 600; //リサイズ後の画像幅の最大値
+                $width_max = 600; //リサイズ後の画像幅
                 $imageresize->resize($comment_image_dir .$product_comment_image, $width_max);
             } else {
-                echo "画像ファイル名を取得できませんでした。";
-                $errors['product_comment_image_upload'] = "画像ファイルをアップロードできませんでした。";
+                $errors['product_comment_image_filename'] = "画像ファイルをアップロードできませんでした。リサイズエラー";
             }
+        } else {
+            $errors['product_comment_image_upload'] = "画像ファイルをアップロードできませんでした。";
         }
     }
 
@@ -91,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit("登録に失敗しました");
         }
         //リロードによる二重サブミット防止策
-        //header('Location:http://192.168.33.10/board_class_ver/board.php');
+        //header('Location:http://192.168.33.10//comment_board-class/board.php');
     } elseif (count($errors) > 0) { ?>
     <li class="step3 active error">
     <p>エラー<br>下記メッセージをご確認ください。</p>

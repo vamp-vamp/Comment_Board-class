@@ -17,8 +17,9 @@ class ImageUploader
                 $this->imageFileName = $this->validateImageType();
                 //ファイルを一時フォルダから指定したディレクトリに移動
                 $this->move($this->imageFileName);
+                return true;
                 //セッションへ受け渡し
-                $_SESSION['success'] = "アップロード完了";
+                //$_SESSION['successw'] = "アップロード完了";
             //redirect
             } else {
                 throw new Exception("ファイルが選択されていません。");
