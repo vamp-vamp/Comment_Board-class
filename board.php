@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit("登録に失敗しました");
         }
         //リロードによる二重サブミット防止策
-        //header('Location:http://192.168.33.10//comment_board-class/board.php');
+        //header('Location:http://192.168.33.10/comment_board-class/board.php');
     } elseif (count($errors) > 0) { ?>
     <li class="step3 active error">
     <p>エラー<br>下記メッセージをご確認ください。</p>
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <img class="card-img-top" src="./upload/<?= he($product_rowcomment['image']);?>" alt="コメントの画像">
         <?php } ?>
         <div class="card-body">
-          <p class="card-text"><?= he($product_rowcomment['comment']);?></p>
+          <p class="card-text"><?= nl2br(he($product_rowcomment['comment']));?></p>
           <p class="card-text"><small class="text-muted"><?= he($product_rowcomment['create_date']);?></small></p>
         </div>
       </div>
