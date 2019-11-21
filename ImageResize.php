@@ -5,9 +5,11 @@ use RuntimeException;
 
 class ImageResize
 {
-    //初期化
-    private $new_width = 0;
-    private $new_height = 0;
+    public function __construct()
+    {
+        $this->new_width = 0;
+        $this->new_height = 0;
+    }
 
     public function resize($image_file_name, $width_max)
     {
@@ -66,7 +68,7 @@ class ImageResize
                     imagefill($image, 0, 0, $alpha);       // その色でキャンバスを塗りつぶす
                     imagecolortransparent($image, $alpha); // 塗りつぶした色を透過色として指定する
                     break;
-                // default:
+                default:
                 //   throw new RuntimeException('対応していないファイル形式です。: ', $type);
             }
             //画像のコピーと伸縮
